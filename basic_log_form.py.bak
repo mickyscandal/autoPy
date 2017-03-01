@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-
-# AutoPy - Automotive maintenance and fill-up log
-# Written by: Micky Scandal   EMAIL: mickyscandal@gmail.com
-# VERSION 0.1-A (Python Version: 3.5.2)
-
 from tkinter import *
 from tkinter.ttk import *
 
@@ -24,7 +18,7 @@ class AutoLogApp(Tk):
 
         self.frames = {}
 
-        for F in (SplashPage, MainPage):              ## PAGE CLASSES NEED TO BE LISTED HERE
+        for F in (SplashPage, GasLog):              ## PAGE CLASSES NEED TO BE LISTED HERE
 
             frame = F(container, self)
 
@@ -57,8 +51,8 @@ class SplashPage(Frame):
         noteLbl = Label(header, text=CONSTRUCTION)
         noteLbl.grid(row=1, column=0)
 
-        button1 = Button(self, text="Preview App",
-                            command=lambda: controller.show_frame(MainPage))
+        button1 = Button(self, text="Preview App (gas log)",
+                            command=lambda: controller.show_frame(GasLog))
         button1.grid(row=1, column=0)
 
         button2 = Button(self, text="Quit",
@@ -66,25 +60,39 @@ class SplashPage(Frame):
         button2.grid(row=1, column=1)
 
 
-class MainPage(Frame):
-    '''Example for a second page
-
-    Could be another 'tab' or something of the sort (like hitting links in a web
-    browser)
-    '''
+class GasLog(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-        ## START EDITING HERE ##
-        label = Label(self, text="Fill-up Log", font=LARGE_FONT)
-        label.grid(sticky='nsew')
+        self.createLog()
+        self.loadLog()
+        self.grid(sticky='nsew')
+        homeBtn = Button(self, text="back home",
+                        command=lambda: controller.show_frame(SplashPage))
+        homeBtn.grid(row=1, column=0, sticky="nsew")
 
-        button1 = Button(self, text="back to home",
-                            command=lambda: controller.show_frame(SplashPage))
-        button1.grid()
+    def createLog(self):
+        tbl = Treeview(self)
+        tbl['columns'] = ('field2', 'field3', 'field4')
+        tbl.heading("#0", text="Field 1", anchor='w')
+        tbl.column("#0", anchor='w')
+        tbl.heading('field2', text="Field 2")
+        tbl.column('field2', anchor='center', width=100)
+        tbl.heading('field3', text="Field 3")
+        tbl.column('field3', anchor='center', width=100)
+        tbl.heading('field4', text="Field 4")
+        tbl.column('field4', anchor='center', width=100)
+        tbl.grid(sticky='nsew')
+        self.treeview = tbl
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
-        ## END EDITING HERE ##
+    def loadLog(self):
+        self.treeview.insert('', 'end', text="Here is", values=('some',
+                    'table', 'data'))
+        self.treeview.insert('', 'end', text="and here", values=('is',
+                    'some', 'more'))
 
 
-
-app = AutoLogApp()
-app.mainloop()
+if __name__ =="__main__":
+    app = AutoLogApp()
+    app.mainloop()
