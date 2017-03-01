@@ -13,14 +13,14 @@ give an explanation of what you did and how it works (keep in mind this is a
 
 
 
-  ## TODO:
-    1. GUI:
-      * create basic 'container' with widgets that appear on all frames
-      * build basic (non functioning) GUI for each section(or log, ie gas, maintenance etc.)
-      * ...
-    2. Functionality:
-      * list out/create basic calculation functions (mileage, avg mileage, etc)
-      * convert code I've already written into a more object oriented design
-      * ...
-    3. Other:
-      * ...
+## TODO:
+1. GUI:
+  * create basic 'container' with widgets that appear on all frames
+  * build basic (non functioning) GUI for each section(or log, ie gas, maintenance etc.)
+  * ...
+2. Functionality:
+  * list out/create basic calculation functions (mileage, avg mileage, etc)
+  * convert code I've already written into a more object oriented design
+  * ...
+3. Other:
+  * ...
