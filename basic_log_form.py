@@ -67,52 +67,74 @@ class GasLog(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
         self.createLog()
-        self.loadLog()
+        # self.loadLog()
         self.grid(sticky='nsew')
-        dateLbl = Label(self, text="Enter Date:")
-        dateEntry = Entry(self)
 
-        odoLbl = Label(self, text="Odometer:")
-        odoEntry = Entry(self)
+        self.dateLbl = Label(self, text="Enter Date:")
+        self.dateEntry = Entry(self)
+        self.odoLbl = Label(self, text="Odometer:")
+        self.odoEntry = Entry(self)
+        self.tripLbl = Label(self, text="Tripometer:")
+        self.tripEntry = Entry(self)
+        self.galLbl = Label(self, text="Gallons:")
+        self.galEntry = Entry(self)
+        self.ppgLbl = Label(self, text="Price/Gallon:")
+        self.ppgEntry = Entry(self)
+        self.totalLbl = Label(self, text="Total:")
+        self.totalEntry = Entry(self)
+        self.submit = Button(self, text="Submit", command=self.insertData) # command needs to insert field imputs into the Treeview
+        self.qt = Button(self, text="Quit", command=parent.quit)
 
-        dateLbl.grid(row=1, column=0)
-        dateEntry.grid(row=1, column=1)
+        self.dateLbl.grid(row=1, column=0)
+        self.dateEntry.grid(row=1, column=1)
+        self.odoLbl.grid(row=1, column=2)
+        self.odoEntry.grid(row=1, column=3)
+        self.tripLbl.grid(row=1, column=4)
+        self.tripEntry.grid(row=1, column=5)
 
-        odoLbl.grid(row=1, column=2)
-        odoEntry.grid(row=1, column=3)
+        self.galLbl.grid(row=2, column=0)
+        self.galEntry.grid(row=2, column=1)
+        self.ppgLbl.grid(row=2, column=2)
+        self.ppgEntry.grid(row=2, column=3)
+        self.totalLbl.grid(row=2, column=4)
+        self.totalEntry.grid(row=2, column=5)
 
-        # homeBtn = Button(self, text="back home",
-        #                 command=lambda: controller.show_frame(SplashPage))
-        # homeBtn.grid(row=1, column=0, sticky="nsew")
+        self.qt.grid(row=3, column=0, columnspan=2, sticky='w')
+        self.submit.grid(row=3, column=5, columnspan=2, sticky='e')
 
     def createLog(self):
-        tbl = Treeview(self)  # height=30 ??
-        tbl['columns'] = ('date', 'odometer', 'tripometer', 'gallons', 'ppg', 'total')
-        tbl.heading("#0", text="No.", anchor='w')
-        tbl.column("#0", anchor='w', width=75)
-        tbl.heading('date', text="Date")
-        tbl.column('date', anchor='center', width=100)
-        tbl.heading('odometer', text="Odometer")
-        tbl.column('odometer', anchor='center', width=100)
-        tbl.heading('tripometer', text="Tripometer")
-        tbl.column('tripometer', anchor='center', width=100)
-        tbl.heading('gallons', text="Gallons")
-        tbl.column('gallons', anchor='center', width=100)
-        tbl.heading('ppg', text="Price/Gallon")
-        tbl.column('ppg', anchor='center', width=100)
-        tbl.heading('total', text="Total")
-        tbl.column('total', anchor='center', width=100)
-        tbl.grid(sticky='nsew', columnspan=4)
-        self.treeview = tbl
+        self.tbl = Treeview(self)  # height=30 ??
+        self.treeScroll = Scrollbar(self, orient='vertical',
+                                    command=self.tbl.yview)
+        self.treeScroll.configure(command=self.tbl.yview)
+        self.tbl.configure(yscrollcommand=self.treeScroll.set)
+        self.tbl['columns'] = ('date', 'odometer', 'tripometer', 'gallons', 'ppg', 'total')
+        self.tbl.heading("#0", text="No.", anchor='w')
+        self.tbl.column("#0", anchor='w', width=75)
+        self.tbl.heading('date', text="Date")
+        self.tbl.column('date', anchor='center', width=100)
+        self.tbl.heading('odometer', text="Odometer")
+        self.tbl.column('odometer', anchor='center', width=100)
+        self.tbl.heading('tripometer', text="Tripometer")
+        self.tbl.column('tripometer', anchor='center', width=100)
+        self.tbl.heading('gallons', text="Gallons")
+        self.tbl.column('gallons', anchor='center', width=100)
+        self.tbl.heading('ppg', text="Price/Gallon")
+        self.tbl.column('ppg', anchor='center', width=100)
+        self.tbl.heading('total', text="Total")
+        self.tbl.column('total', anchor='center', width=100)
+        self.tbl.grid(sticky='nsew', columnspan=6)
+        self.treeScroll.grid(row=0, column=6, sticky='ns')
+        self.treeview = self.tbl
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.id = 1
 
-    def loadLog(self):
-        self.treeview.insert('', 'end', text="No. "+str(self.id), values=('100,000',
-                    '300.00', '11.05', '$2.45', '$27.07'))
-        self.treeview.insert('', 'end', text=TIMESTAMP, values=('is',
-                    'some', 'more'))
+    def insertData(self):
+        self.treeview.insert('', 'end', text="No_"+str(self.id),
+                             values=(self.dateEntry.get(), self.odoEntry.get(),
+                                     self.tripEntry.get(), self.galEntry.get(),
+                                     self.ppgEntry.get(), self.totalEntry.get()))
         self.id += 1
 
 
