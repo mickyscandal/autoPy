@@ -63,6 +63,9 @@ class SplashPage(Frame):
         button2.grid(row=1, column=1)
 
 
+
+# I REALLY NEED TO CLEAN THIS CLASS/METHODS UP. THERE'S NO REASON I SHOULD BE REPEATING
+# MYSELF THIS MUCH.
 class GasLog(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
