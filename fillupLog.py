@@ -3,11 +3,17 @@ from tkinter.ttk import *
 import csv
 
 ##############TODO###############################TODO#################
-# CREATE loadData() to initialize past log entries
 # REFACTOR as much as I can
 # Research making my app a 'finished project'
-#
-#
+# Add a button to delete a selected entry
+#     * that means I need to make it so i can select a row to delete
+#       by clicking on it then clicking 'delete'
+# Clear all entry fields after 'submit' is pressed
+# load row data into entry fields when (row) clicked on for editing
+#     * maybe make an edit button instead to prevent accidental editing
+# add some color/styling
+#     * alternate bg color of rows
+#     * play with padding/sticky etc to get a cleaner look
 ##############TODO###############################TODO##################
 
 class App(Tk):
@@ -35,7 +41,6 @@ class App(Tk):
 class GasLog(Frame):
 
     def __init__(self, parent, controller):
-        self.datFile = open('gasLogDat.csv', 'a')
         Frame.__init__(self, parent)
         self.parent = parent
         self.controller = controller
@@ -45,18 +50,18 @@ class GasLog(Frame):
         self.loadData()
         self.createEntry()
 
-
     def createLog(self):
         '''
         create Treeview 'table' to view log entries
         '''
 
-        self.tbl = Treeview(self)  # height=30 ??
+        self.tbl = Treeview(self)
         self.treeScroll = Scrollbar(self, orient='vertical',
                                     command=self.tbl.yview)
         self.treeScroll.configure(command=self.tbl.yview)
         self.tbl.configure(yscrollcommand=self.treeScroll.set)
-        self.tbl['columns'] = ('date', 'odometer', 'tripometer', 'gallons', 'ppg', 'total')
+        self.tbl['columns'] = ('date', 'odometer', 'tripometer', 'gallons',
+                               'ppg', 'total')
         self.tbl.heading("#0", text="No.", anchor='w')
         self.tbl.column("#0", anchor='w', width=75)
         for n in self.tbl['columns']:
@@ -65,11 +70,11 @@ class GasLog(Frame):
         self.tbl.grid(sticky='nsew', columnspan=6)
         self.treeScroll.grid(row=0, column=6, sticky='ns')
         self.treeview = self.tbl
+        Separator(self, orient='horizontal').grid(row=1,
+                                                  columnspan=6, sticky='nsew')
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
         id = 1
-
-
 
     def createEntry(self):
         '''
@@ -89,46 +94,51 @@ class GasLog(Frame):
         self.totalLbl = Label(self, text="Total:")
         self.totalEntry = Entry(self)
         self.submit = Button(self, text="Submit", command=self.insertData) # command needs to insert field imputs into the Treeview
-        self.qt = Button(self, text="Quit", command=self.exit)
+        self.qt = Button(self, text="Quit", command=self.controller.quit)
 
-        self.dateLbl.grid(row=1, column=0)
-        self.dateEntry.grid(row=1, column=1)
-        self.odoLbl.grid(row=1, column=2)
-        self.odoEntry.grid(row=1, column=3)
-        self.tripLbl.grid(row=1, column=4)
-        self.tripEntry.grid(row=1, column=5)
+        self.dateLbl.grid(row=2, column=0)
+        self.dateEntry.grid(row=2, column=1)
+        self.odoLbl.grid(row=2, column=2)
+        self.odoEntry.grid(row=2, column=3)
+        self.tripLbl.grid(row=2, column=4)
+        self.tripEntry.grid(row=2, column=5)
 
-        self.galLbl.grid(row=2, column=0)
-        self.galEntry.grid(row=2, column=1)
-        self.ppgLbl.grid(row=2, column=2)
-        self.ppgEntry.grid(row=2, column=3)
-        self.totalLbl.grid(row=2, column=4)
-        self.totalEntry.grid(row=2, column=5)
+        self.galLbl.grid(row=3, column=0)
+        self.galEntry.grid(row=3, column=1)
+        self.ppgLbl.grid(row=3, column=2)
+        self.ppgEntry.grid(row=3, column=3)
+        self.totalLbl.grid(row=3, column=4)
+        self.totalEntry.grid(row=3, column=5)
 
-        self.qt.grid(row=3, column=0, columnspan=2, sticky='w')
-        self.submit.grid(row=3, column=5, columnspan=2, sticky='e')
-        self.id = 1
+        self.qt.grid(row=4, column=0, columnspan=2, sticky='w')
+        self.submit.grid(row=4, column=5, columnspan=2, sticky='e')
 
     def insertData(self):
         self.tbl.insert('', 'end', text="No_"+str(self.id),
                              values=(self.dateEntry.get(), self.odoEntry.get(),
                                      self.tripEntry.get(), self.galEntry.get(),
                                      self.ppgEntry.get(), self.totalEntry.get()))
-        cWriter = csv.writer(self.datFile)
-        cWriter.writerow([
-            self.dateEntry.get(), self.odoEntry.get(), self.tripEntry.get(),
-            self.galEntry.get(), self.ppgEntry.get(), self.totalEntry.get()
-        ])
+        with open('fillupLogDat.csv', 'a') as f:
+            cWriter = csv.writer(f)
+            cWriter.writerow([
+                self.dateEntry.get(), self.odoEntry.get(), self.tripEntry.get(),
+                self.galEntry.get(), self.ppgEntry.get(), self.totalEntry.get()
+            ])
         self.id += 1
 
     def loadData(self):
-        pass
-
-    def exit(self):
-        self.datFile.close()
-        self.controller.quit()
-
-
+        self.id = 1
+        try:
+            load = open('fillupLogDat.csv', 'r')
+            cReader = csv.reader(load)
+            for row in cReader:
+                self.tbl.insert('', 'end', text="No_"+str(self.id), values=(
+                    row[0], row[1], row[2], row[3], row[4], row[5]
+                ))
+                self.id += 1
+            load.close()
+        except FileNotFoundError:
+            pass
 
 
 if __name__ == '__main__':
