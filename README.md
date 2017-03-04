@@ -1,5 +1,16 @@
 # autoPy
 
+# ATTN:
+Version 1.0 is out! In this version, there is only a gas fill-up log (the rest)
+will be added later. as of now all CRUD functions are working.
+
+# Installation:
+1. Download/clone this repo
+2. Navigate to the folder where you downloaded
+3. Give 'fillupLog.py' executable permissions (chmod +x fillupLog.csv)
+4. Run (either python fillupLog.csv, or ./fillupLog.csv)
+
+
 AutoPy is a GUI application (written using Python3 and tkinter(ttk)) for logging
 various automotive maintenance tasks, with a focus on tracking fuel fill-ups and
 calculating several stats all based around fuel consumption and cost.
@@ -15,11 +26,9 @@ give an explanation of what you did and how it works (keep in mind this is a
 
 ## TODO:
 1. GUI:
-  * create basic 'container' with widgets that appear on all frames
-  * build basic (non functioning) GUI for each section(or log, ie gas, maintenance etc.)
-  * ...
+  * pretty things up, make a little more pleasing to the eye
 2. Functionality:
-  * list out/create basic calculation functions (mileage, avg mileage, etc)
+  * create/run testing suite to find buts
   * convert code I've already written into a more object oriented design
   * ...
 3. Other:
