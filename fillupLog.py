@@ -12,8 +12,18 @@ import sys
 #     * play with padding/sticky etc to get a cleaner look
 # Add input validation
 # Add a help dialog (options):
-#   * maybe create a popup window with a quick help message
-#   * create a seperate page to 'tkraise'
+#   * add series of labels to print a basic 'help message'
+#   * add a 'close' button
+#   * set default position for the window to 'pop up' and try to set overall size
+#   *
+# Create an 'about' windows like the help window to display info about me
+#   * maybe add some interactivity like clicking my email to open user's email client
+#   * Try to make Fields like 'version' Dynamic so i can just change a var when
+#     a release a new version.
+#   *
+# 
+# when clear fields (button) is run, the 'selection' needs to be unhighlighted
+#   as well as clearing the text from the entry fields.
 #
 ##############TODO###############################TODO##################
 
@@ -30,6 +40,7 @@ class App(Tk):
         '''
         Tk.__init__(self)
 
+        self.title('AutoPy GasLog')
         self.menuBar()
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
@@ -47,16 +58,31 @@ class App(Tk):
     def menuBar(self):
         menubar = Menu(self)
         self.config(menu=menubar)
-        filemenu = Menu(menubar)
-        menubar.add_cascade(label='File', menu=filemenu)
 
-        def doPrint():
-            print('doPrint')
-        def doSave(): print('doSave')
-        filemenu.add_command(label="Print", command=doPrint)
-        filemenu.add_command(label='Save', command=doSave)
+        # File Menu
+        filemenu = Menu(menubar)
+        filemenu.add_command(label="Print", command=None)
+        filemenu.add_command(label='Save', command=None)
         filemenu.add_command(label="Exit", command=self.quit)
 
+        # Edit Menu
+        editmenu = Menu(menubar)
+        editmenu.add_command(label='Item', command=None)
+
+        # Help Menu
+        helpmenu = Menu(menubar)
+        helpmenu.add_command(label="About", command=None)
+        helpmenu.add_command(label="Help", command=self.helpWindow)
+
+        menubar.add_cascade(label='File', menu=filemenu)
+        menubar.add_cascade(label="Edit", menu=editmenu)
+        menubar.add_cascade(label="Help", menu=helpmenu)
+
+    def helpWindow(self):
+        helpWin = Toplevel(self)
+        helpWin.title('GasLog Help')
+        htitle = Label(helpWin, text="Help")
+        # htitle.grid(row=0, column=0, sticky='ew')
 
     def show_frame(self, cont):
         '''
@@ -110,7 +136,7 @@ class GasLog(Frame):
             self.tbl.heading(n, text=n)
             self.tbl.column(n, width=100, anchor='center')
         self.tbl.bind('<ButtonRelease-1>', self.selectItem)
-        # self.tbl.bind('<Double-1>', self.deleteSelected)  # Double-1 can be reassigned
+        self.tbl.bind('<Double-1>', self.clearFields)  # Double-1 can be reassigned
         #    for diagnostic reasons so you don't need to create a new widget to test a function.
         self.tbl.grid(sticky='nsew', columnspan=6)
         self.treeScroll.grid(row=0, column=6, sticky='ns')
@@ -138,9 +164,10 @@ class GasLog(Frame):
         self.ppgEntry = Entry(self)
         self.totalLbl = Label(self, text="Total:")
         self.totalEntry = Entry(self)
-        self.submit = Button(self, text="Submit", command=self.insertData) # command needs to insert field imputs into the Treeview
+        self.submit = Button(self, text="Submit", command=self.insertData)
         self.delete = Button(self, text="Delete", command=self.deleteSelected)
         self.qt = Button(self, text="Quit", command=self.controller.quit)
+        self.clr = Button(self, text="Clear Fields", command=self.clearFields)
 
         self.dateLbl.grid(row=2, column=0, sticky='e')
         self.dateEntry.grid(row=2, column=1)
@@ -157,6 +184,7 @@ class GasLog(Frame):
         self.totalEntry.grid(row=3, column=5)
 
         self.qt.grid(row=4, column=0, columnspan=2, sticky='w')
+        self.clr.grid(row=4, column=3, sticky='e')
         self.delete.grid(row=4, column=4, sticky='e')
         self.submit.grid(row=4, column=5, columnspan=1, sticky='w')
 
@@ -204,12 +232,15 @@ class GasLog(Frame):
             self.clearFields()
             curItem = self.tbl.focus()
             row = self.tbl.item(curItem)['values']
-            self.dateEntry.insert(0, row[0])
-            self.odoEntry.insert(0, row[1])
-            self.tripEntry.insert(0, row[2])
-            self.galEntry.insert(0, row[3])
-            self.ppgEntry.insert(0, row[4])
-            self.totalEntry.insert(0, row[5])
+            if self.dateEntry:
+                self.dateEntry.insert(0, row[0])
+                self.odoEntry.insert(0, row[1])
+                self.tripEntry.insert(0, row[2])
+                self.galEntry.insert(0, row[3])
+                self.ppgEntry.insert(0, row[4])
+                self.totalEntry.insert(0, row[5])
+            else:
+                self.clearFields()
         except IndexError:
             pass
 
@@ -217,6 +248,7 @@ class GasLog(Frame):
         '''
         clear all entry fields after insert or delete
         '''
+        # print('clearFields() is running...') #                            DIAG
         self.entryFields = (self.dateEntry, self.odoEntry, self.tripEntry,
                             self.galEntry, self.ppgEntry, self.totalEntry)
         for item in self.entryFields:
